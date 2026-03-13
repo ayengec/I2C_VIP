@@ -223,7 +223,6 @@ UVM_INFO ../agent/i2c_monitor.sv(225) @ 41435000: uvm_test_top.env.agent.mon [i2
 UVM_INFO ../agent/i2c_driver.sv(201) @ 41775000: uvm_test_top.env.agent.drv [i2c_driver] READ done: READ   addr=7'h50  reg=8'h04  data=8'h70(01110000)  addr_ack=1 reg_ack=1
 UVM_INFO ../seq/i2c_rw_seq.sv(47) @ 41775000: uvm_test_top.env.agent.seqr@@seq [i2c_rw_seq] Read  8'h70 <- reg[8'h04]  (expected 8'h70)     MATCH
 UVM_INFO ../tests/i2c_rw_test.sv(48) @ 81775000: uvm_test_top [i2c_rw_test] Test done.
-UVM_INFO /tools/cds/xlm/xlm24.03.006.lnx86/tools/methodology/UVM/CDNS-1.1d/sv/src/base/uvm_objection.svh(1268) @ 81775000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
 UVM_INFO ../env/i2c_scoreboard.sv(106) @ 81775000: uvm_test_top.env.sb [i2c_scoreboard] 
 --------------------------------------
   Scoreboard Summary
