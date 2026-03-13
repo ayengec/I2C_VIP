@@ -1,0 +1,23 @@
+HOW TO RUN
+
+chmod +x scripts/run_questa.sh
+chmod +x scripts/run_xrun.sh
+chmod +x scripts/clean.sh
+
+Questa:
+  cd scripts
+  ./run_questa.sh
+
+Xcelium:
+  cd scripts
+  ./run_xrun.sh
+
+Clean:
+  cd scripts
+  ./clean.sh
+
+EDA Playground:
+  - Add all files, set top to example_tb_top
+  - Check "Open EPWave after run"
+  - UVM library must be enabled
+  - Run options: +UVM_TESTNAME=i2c_rw_test
