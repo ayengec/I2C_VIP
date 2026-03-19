@@ -121,12 +121,6 @@ module i2c_ram_dut #(
           end
 
           // -- Receive address byte (7 addr bits + R/W) ---
-          // Bug fixes here:
-          //   shift_reg[6:0] not [7:1] for address compare
-          //   sda_in not shift_reg[0] for rw_bit
-          //   These were wrong because on bit_cnt==0, shift_reg
-          //   hasn't been updated yet (non-blocking assignment).
-          //   Old shift_reg has the first 7 bits, sda_in has bit 8.
           S_ADDR: begin
             if (scl_rising) begin
               shift_reg <= {shift_reg[6:0], sda_in};
@@ -145,10 +139,6 @@ module i2c_ram_dut #(
           end
 
           // -- Send ACK for address ------------------------
-          // Bug fix: previously had two conflicting if(scl_falling)
-          // blocks in the same clock cycle. Second one overrode first
-          // so sda_out never actually went low (ACK was never sent).
-          // Now using ack_phase flag:
           //   ack_phase=0: first falling  pull SDA low
           //   ack_phase=1: second falling  release + move on
           S_ADDR_ACK: begin
@@ -181,8 +171,7 @@ module i2c_ram_dut #(
           end
 
           // -- Receive register address byte ---------------
-          // Bug fix: reg_ptr <= {shift_reg[6:0], sda_in}
-          // Old code: reg_ptr <= shift_reg  <- missing last bit
+          // reg_ptr <= {shift_reg[6:0], sda_in}
           S_REG: begin
             if (scl_rising) begin
               shift_reg <= {shift_reg[6:0], sda_in};
@@ -213,8 +202,7 @@ module i2c_ram_dut #(
           end
 
           // -- Receive data byte (write) --------------------
-          // Bug fix: ram[reg_ptr] <= {shift_reg[6:0], sda_in}
-          // Old code: ram[reg_ptr] <= shift_reg  <- missing last bit
+          // ram[reg_ptr] <= {shift_reg[6:0], sda_in}
           S_DATA_WR: begin
             if (scl_rising) begin
               shift_reg <= {shift_reg[6:0], sda_in};
