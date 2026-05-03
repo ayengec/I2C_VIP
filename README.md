@@ -1,15 +1,18 @@
 # I2C VIP
 
-UVM-based I2C master VIP with a 256-byte I2C RAM slave DUT. Supports write, read, write-then-read-back, and bus scanning. Protocol checker assertions are in the interface.
+UVM-based Dual-Role (Master/Slave) I2C VIP with an autonomous, CRV-capable internal memory. Supports master write/read operations, bus scanning, and can act as an otonomous slave endpoint. Protocol checker assertions are embedded in the interface.
 
 ---
 
 ## What it does
 
-- **Write:** sends START + device addr + register addr + data byte + STOP
-- **Read:** sends START + addr + reg addr + repeated START + addr + receives data + STOP
-- **Scanner:** probes all 128 I2C addresses and prints a table of found devices
-- **Write-read:** writes random bytes to random addresses then reads them back, scoreboard verifies
+- **Dual-Role Capability:** Operates as `I2C_MASTER` or `I2C_SLAVE` based on configuration.
+- **Autonomous Slave Mode:** Responds to Master Write/Read requests automatically using an internal 256-byte memory array.
+- **CRV-Ready Memory:** Slave memory is fully randomizable. You can extend the config to constrain sensor-specific register values.
+- **Master Write:** Sends START + device addr + register addr + data byte + STOP
+- **Master Read:** Sends START + addr + reg addr + repeated START + addr + receives data + STOP
+- **Scanner:** Probes all 128 I2C addresses and prints a table of found devices.
+- **Write-read:** Writes random bytes to random addresses then reads them back, scoreboard verifies.
 
 ---
 
@@ -38,10 +41,11 @@ i2c_vip/
 │   └── i2c_cfg.sv             config: clocks_per_bit, target addr, mode
 │
 ├── agent/
-│   ├── i2c_sequencer.sv       standard UVM sequencer
-│   ├── i2c_driver.sv          I2C master, generates SCL, drives SDA
+│   ├── i2c_sequencer.sv       standard UVM sequencer (used in Master mode)
+│   ├── i2c_driver.sv          I2C master driver, generates SCL, drives SDA
+│   ├── i2c_slave_driver.sv    I2C autonomous slave driver, monitors SCL and responds
 │   ├── i2c_monitor.sv         watches SCL/SDA, decodes transactions
-│   └── i2c_agent.sv           puts it all together
+│   └── i2c_agent.sv           instantiates master or slave driver based on cfg.role
 │
 ├── seq/
 │   ├── i2c_write_seq.sv       write one byte to one register address
@@ -136,11 +140,42 @@ The interface has four assertions:
 
 ---
 
-## DUT parameters
+## DUT parameters (for example_dut)
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | SLAVE_ADDR | 7'h50 | I2C slave address |
+
+---
+
+## Configuration (`i2c_cfg`)
+
+The agent is fully configurable via `i2c_cfg`.
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `role` | `I2C_MASTER` | `I2C_MASTER` or `I2C_SLAVE`. |
+| `mode` | `I2C_PASSIVE`| `I2C_ACTIVE` (drives bus) or `I2C_PASSIVE` (monitor only). |
+| `clocks_per_bit` | 20 | Controls I2C baud rate (baud = clk / clocks_per_bit). |
+| `target_addr` | 7'h50 | Address the Master targets. |
+| `slave_addr` | 7'h50 | Address the VIP responds to in `I2C_SLAVE` mode. |
+| `memory [256]` | 0x00 | `rand` array used by Slave mode to otonomously respond to reads. |
+
+### CRV Slave Configuration Example
+You can extend the configuration to mimic any I2C sensor natively in UVM:
+```sv
+class my_sensor_cfg extends i2c_cfg;
+  constraint sensor_regs_c {
+    memory[8'h00] == 8'hA5; // Fixed ID register
+    memory[8'h01] inside {[0 : 100]}; // Random sensor data
+  }
+  function new(string name="my_sensor_cfg");
+    super.new(name);
+    this.role = I2C_SLAVE;
+    this.mode = I2C_ACTIVE;
+  endfunction
+endclass
+```
 
 ---
 

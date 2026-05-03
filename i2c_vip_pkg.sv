@@ -13,6 +13,11 @@ package i2c_vip_pkg;
     I2C_ACTIVE  = 1'b1
   } i2c_agent_mode_e;
 
+  typedef enum logic {
+    I2C_MASTER = 1'b0,
+    I2C_SLAVE  = 1'b1
+  } i2c_role_e;
+
   // -- Common -------------------------------------------------
   `include "../common/i2c_seq_item.sv"
   `include "../common/i2c_cfg.sv"
@@ -20,6 +25,7 @@ package i2c_vip_pkg;
   // -- Agent --------------------------------------------------
   `include "../agent/i2c_sequencer.sv"
   `include "../agent/i2c_driver.sv"
+  `include "../agent/i2c_slave_driver.sv"
   `include "../agent/i2c_monitor.sv"
   `include "../agent/i2c_agent.sv"
 
