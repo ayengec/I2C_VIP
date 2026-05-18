@@ -20,8 +20,9 @@ UVM-based Dual-Role (Master/Slave) I2C VIP with an autonomous, CRV-capable inter
 
 ```bash
 cd scripts
-chmod +x run_questa.sh run_xrun.sh clean.sh
+chmod +x run_verilator.sh run_questa.sh run_xrun.sh clean.sh
 
+./run_verilator.sh # Verilator
 ./run_questa.sh    # Questa
 ./run_xrun.sh      # Xcelium
 ./clean.sh         # remove build artifacts

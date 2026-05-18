@@ -42,7 +42,7 @@
       `uvm_info(get_type_name(), "Starting scanner test...", UVM_NONE)
 
       scan_seq = i2c_scanner_seq::type_id::create("scan_seq");
-      scan_seq.start(env.agent.seqr);
+      scan_seq.start(env.agent.sequencer);
 
       // -- Verify results -----------------------------------
       // DUT must respond at target_addr
