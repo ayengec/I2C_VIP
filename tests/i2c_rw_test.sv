@@ -40,7 +40,7 @@ class i2c_rw_test extends uvm_test;
     seq             = i2c_rw_seq::type_id::create("seq");
     seq.target_addr = cfg.target_addr;
     seq.n_trans     = 2;
-    seq.start(env.agent.seqr);
+    seq.start(env.agent.sequencer);
     // no exp_mbx - scoreboard uses shadow RAM for all comparisons
 
     repeat (cfg.clocks_per_bit * 200) @(posedge cfg.vif.clk);
